@@ -51,15 +51,37 @@
     <div class="container">
         <h1>Chào mừng bạn đến với trang web của tôi!</h1>
         <p>Đây là một trang web đơn giản được triển khai trên GitHub Pages.</p>
-        <button onclick="changeMessage()">Nhấn vào tôi</button>
+        <textarea id="inputText" placeholder="Nhập văn bản..." rows="4" cols="50"></textarea>
+        <br>
+        <button onclick="sendText()">Gửi đến API</button>
         <p id="message"></p>
     </div>
     
     <script>
-        function changeMessage() {
+        async function sendText() {
+            let text = document.getElementById("inputText").value;
             let message = document.getElementById("message");
-            message.innerText = "Cảm ơn bạn đã ghé thăm!";
-            message.classList.add("show");
+            
+            try {
+                let response = await fetch("https://api.example.com/analyze", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ text: text })
+                });
+                
+                if (!response.ok) {
+                    throw new Error("Lỗi API: " + response.status);
+                }
+                
+                let data = await response.json();
+                message.innerText = "Kết quả từ API: " + JSON.stringify(data, null, 2);
+                message.classList.add("show");
+            } catch (error) {
+                message.innerText = "Lỗi: " + error.message;
+                message.classList.add("show");
+            }
         }
     </script>
 </body>
